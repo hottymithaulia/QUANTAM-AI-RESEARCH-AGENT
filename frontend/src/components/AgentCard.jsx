@@ -1,79 +1,246 @@
-// AgentCard.jsx — Reusable card for displaying a single agent's result
-// Used for Technical, Fundamental, and Sentiment agents.
-// Each agent card shows: verdict badge, confidence bar, and reasoning text.
+// AgentCard.jsx — Displays detailed agent analysis metrics,
+// including multi-timeframe trends, strengths/weaknesses, and drivers.
 
 import React from "react";
 
-/**
- * Props:
- *   title      — Agent name, e.g. "Technical Analysis"
- *   icon       — Emoji icon for the agent
- *   verdict    — The main result: "Bullish", "Strong", "Positive", etc.
- *   confidence — 0–100 score from the agent
- *   reason     — Explanation string
- *   delay      — Animation delay (in seconds) for staggered entrance
- */
-function AgentCard({ title, icon, verdict, confidence, reason, delay = 0 }) {
-
-  // Determine badge style based on verdict text
-  function getBadgeClass(v) {
-    const lower = v.toLowerCase();
-    if (["bullish", "strong", "positive"].includes(lower)) return "badge-bullish";
-    if (["bearish", "weak", "negative"].includes(lower))   return "badge-bearish";
-    return "badge-neutral"; // neutral, average, mixed
+function AgentCard({ title, icon, verdict, confidence, reason, details, delay = 0 }) {
+  // Verdict styling
+  function getVerdictBadge(v) {
+    const l = v ? v.toLowerCase() : "";
+    if (["bullish", "strong", "positive"].includes(l)) return "badge-bullish";
+    if (["bearish", "weak", "negative"].includes(l)) return "badge-bearish";
+    return "badge-neutral";
   }
 
-  // Color for the confidence percentage text
-  function getConfidenceColor(c) {
+  function getConfColor(c) {
     if (c >= 75) return "text-emerald-400";
     if (c >= 55) return "text-amber-400";
     return "text-red-400";
   }
 
+  const isTech = title.toLowerCase().includes("technical");
+  const isFund = title.toLowerCase().includes("fundamental");
+  const isSent = title.toLowerCase().includes("sentiment");
+
   return (
     <div
-      className="quantum-card fade-in-up"
+      className="quantum-card flex flex-col gap-4 fade-in-up"
       style={{ animationDelay: `${delay}s` }}
     >
-      {/* ── Card Header ─────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-xl">
+      {/* ── Card Header ── */}
+      <div className="flex items-center gap-3 border-b border-[#1e1e4a]/60 pb-3">
+        <div className="w-9 h-9 rounded-xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center text-lg shadow-inner">
           {icon}
         </div>
         <div>
-          <h3 className="font-semibold text-white text-sm">{title}</h3>
-          <p className="text-slate-500 text-xs">AI Agent Analysis</p>
+          <h4 className="font-bold text-white text-sm tracking-wide">{title}</h4>
+          <p className="text-slate-500 text-xs">AI Agent Specialist</p>
         </div>
-        {/* Verdict Badge — top right */}
-        <div className="ml-auto">
-          <span className={`badge ${getBadgeClass(verdict)}`}>
-            {verdict}
-          </span>
-        </div>
+        <span className={`ml-auto badge ${getVerdictBadge(verdict)}`}>
+          {verdict}
+        </span>
       </div>
 
-      {/* ── Confidence Score ─────────────────────────────────────────────── */}
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-slate-400 text-xs font-medium">Confidence</span>
-          <span className={`text-sm font-bold ${getConfidenceColor(confidence)}`}>
+      {/* ── Confidence Score ── */}
+      <div>
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-slate-500 text-xs font-semibold">Agent Conviction</span>
+          <span className={`text-xs font-mono font-bold ${getConfColor(confidence)}`}>
             {confidence}%
           </span>
         </div>
-        {/* Animated progress bar */}
         <div className="confidence-bar">
-          <div
-            className="confidence-fill"
-            style={{ width: `${confidence}%` }}
-          />
+          <div className="confidence-fill" style={{ width: `${confidence}%` }} />
         </div>
       </div>
 
-      {/* ── Reason / Explanation ─────────────────────────────────────────── */}
-      <div className="bg-[#0a0a1a] rounded-xl p-3 border border-[#1e1e4a]">
-        <p className="text-xs text-slate-400 mb-1 font-medium">Agent Reasoning</p>
-        <p className="text-sm text-slate-300 leading-relaxed">{reason}</p>
+      {/* ── Custom Metric Grids (Technical / Fundamental / Sentiment) ── */}
+      {isTech && details && (
+        <div className="grid grid-cols-2 gap-3 text-xs bg-[#0a0a1a]/40 p-3 rounded-xl border border-[#1e1e4a]/40">
+          <div>
+            <p className="text-slate-500 font-medium">Trend Strength</p>
+            <p className="text-white font-semibold mt-0.5">{details.trend_strength || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium">Volatility</p>
+            <p className="text-white font-semibold mt-0.5">{details.volatility ? `${details.volatility.toFixed(1)}%` : "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium">Support (20d min)</p>
+            <p className="text-emerald-400 font-mono font-semibold mt-0.5">${details.support_level?.toFixed(2) || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium">Resistance (20d max)</p>
+            <p className="text-red-400 font-mono font-semibold mt-0.5">${details.resistance_level?.toFixed(2) || "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium">Dist. to Support</p>
+            <p className="text-emerald-500/80 font-mono font-semibold mt-0.5">{details.distance_to_support !== undefined ? `${details.distance_to_support}%` : "N/A"}</p>
+          </div>
+          <div>
+            <p className="text-slate-500 font-medium">Dist. to Resistance</p>
+            <p className="text-red-500/80 font-mono font-semibold mt-0.5">{details.distance_to_resistance !== undefined ? `${details.distance_to_resistance}%` : "N/A"}</p>
+          </div>
+          
+          {/* Multi-Timeframe Trend Grid */}
+          {details.timeframe_analysis && (
+            <div className="col-span-2 mt-2 pt-2 border-t border-[#1e1e4a]/45">
+              <p className="text-slate-500 font-medium mb-2">Timeframe Trend Structure</p>
+              <div className="grid grid-cols-5 gap-1.5 text-center font-mono text-[9px]">
+                {Object.entries(details.timeframe_analysis).map(([tf, trend]) => {
+                  const isUp = trend.toLowerCase().includes("bullish");
+                  const isDown = trend.toLowerCase().includes("bearish");
+                  return (
+                    <div key={tf} className="bg-[#070715] py-1 rounded border border-[#1d1d40]">
+                      <span className="text-slate-400 block font-semibold">{tf}</span>
+                      <span className={`font-black mt-0.5 block ${isUp ? "text-emerald-400" : isDown ? "text-red-400" : "text-amber-400"}`}>
+                        {trend.replace("Strong ", "S. ")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isFund && details && (
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-3 gap-2 bg-[#0a0a1a]/40 p-2.5 rounded-xl border border-[#1e1e4a]/40 text-[10px] text-center">
+            <div>
+              <span className="text-slate-500 block">Health</span>
+              <span className="text-white font-bold block mt-0.5">{details.health_score}/100</span>
+            </div>
+            <div>
+              <span className="text-slate-500 block">Valuation</span>
+              <span className="text-white font-bold block mt-0.5">{details.valuation_score}/100</span>
+            </div>
+            <div>
+              <span className="text-slate-500 block">Growth</span>
+              <span className="text-white font-bold block mt-0.5">{details.growth_score}/100</span>
+            </div>
+          </div>
+          
+          {/* Strengths & Weaknesses Columns */}
+          {details.strengths && details.weaknesses && (
+            <div className="grid grid-cols-2 gap-3 text-xs bg-[#0a0a1a]/40 p-3 rounded-xl border border-[#1e1e4a]/40">
+              <div className="border-r border-[#1e1e4a]/40 pr-2">
+                <p className="text-emerald-400 font-semibold mb-1.5 flex items-center gap-1">
+                  <span>✔</span> Strengths
+                </p>
+                <ul className="list-disc list-inside text-slate-400 leading-normal pl-0.5 space-y-1 text-[9px]">
+                  {details.strengths.slice(0, 3).map((str, idx) => (
+                    <li key={idx} className="truncate" title={str}>{str}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-red-400 font-semibold mb-1.5 flex items-center gap-1">
+                  <span>✗</span> Weaknesses
+                </p>
+                <ul className="list-disc list-inside text-slate-400 leading-normal pl-0.5 space-y-1 text-[9px]">
+                  {details.weaknesses.slice(0, 3).map((weak, idx) => (
+                    <li key={idx} className="truncate" title={weak}>{weak}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {isSent && details && (
+        <div className="flex flex-col gap-3">
+          <div className="bg-[#0a0a1a]/40 p-3 rounded-xl border border-[#1e1e4a]/40 text-xs">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-slate-500">Sentiment Flow</span>
+              <span className="font-mono text-[10px] text-white">Consensus Matrix</span>
+            </div>
+            <div className="flex h-3 rounded-full overflow-hidden w-full font-mono text-[9px] font-bold text-center leading-3">
+              <div className="bg-emerald-500/80 text-white" style={{ width: `${(details.positive_ratio * 100) || 0}%` }}>
+                {details.positive_ratio > 0.15 ? `${Math.round(details.positive_ratio * 100)}%` : ""}
+              </div>
+              <div className="bg-[#1e1e4a] text-slate-400" style={{ width: `${((1 - details.positive_ratio - details.negative_ratio) * 100) || 0}%` }}>
+              </div>
+              <div className="bg-red-500/80 text-white" style={{ width: `${(details.negative_ratio * 100) || 0}%` }}>
+                {details.negative_ratio > 0.15 ? `${Math.round(details.negative_ratio * 100)}%` : ""}
+              </div>
+            </div>
+          </div>
+
+          {/* Positive vs Negative Drivers Columns */}
+          {details.positive_drivers && details.negative_drivers && (
+            <div className="grid grid-cols-2 gap-3 text-xs bg-[#0a0a1a]/40 p-3 rounded-xl border border-[#1e1e4a]/40">
+              <div className="border-r border-[#1e1e4a]/40 pr-2">
+                <p className="text-emerald-400 font-semibold mb-1.5 flex items-center gap-1">
+                  <span>▲</span> Bullish Drivers
+                </p>
+                <ul className="list-disc list-inside text-slate-400 leading-normal pl-0.5 space-y-1 text-[9px]">
+                  {details.positive_drivers.slice(0, 3).map((drv, idx) => (
+                    <li key={idx} className="truncate" title={drv}>{drv}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-red-400 font-semibold mb-1.5 flex items-center gap-1">
+                  <span>▼</span> Bearish Drivers
+                </p>
+                <ul className="list-disc list-inside text-slate-400 leading-normal pl-0.5 space-y-1 text-[9px]">
+                  {details.negative_drivers.slice(0, 3).map((drv, idx) => (
+                    <li key={idx} className="truncate" title={drv}>{drv}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Agent Explanation Summary ── */}
+      <div className="bg-[#0a0a1a] rounded-xl p-3 border border-[#1e1e4a] text-xs flex-1">
+        <p className="text-slate-500 font-semibold mb-1">Agent Commentary</p>
+        <p className="text-slate-350 leading-relaxed font-light text-[11px]">
+          {reason || details?.summary}
+        </p>
       </div>
+
+      {/* ── Key Signals or Metric Highlights bottom tags ── */}
+      {isTech && details?.signals && details.signals.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1 border-t border-[#1e1e4a]/40 pt-2">
+          {details.signals.slice(0, 3).map((sig, i) => (
+            <span key={i} className="px-2 py-0.5 bg-purple-900/20 border border-purple-500/10 text-purple-400 text-[9px] rounded">
+              ⚡ {sig}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {isFund && details?.metrics && (
+        <div className="flex flex-wrap gap-1.5 mt-1 border-t border-[#1e1e4a]/40 pt-2 text-[9px]">
+          {details.metrics.pe_ratio !== null && (
+            <span className="px-2 py-0.5 bg-indigo-900/20 border border-indigo-500/10 text-indigo-400 rounded">
+              PE: {details.metrics.pe_ratio}x
+            </span>
+          )}
+          <span className="px-2 py-0.5 bg-indigo-900/20 border border-indigo-500/10 text-indigo-400 rounded">
+            Rev Growth: {details.metrics.revenue_growth_pct}%
+          </span>
+          <span className="px-2 py-0.5 bg-indigo-900/20 border border-indigo-500/10 text-indigo-400 rounded">
+            Cap: {details.metrics.market_cap}
+          </span>
+        </div>
+      )}
+
+      {isSent && details?.events && details.events.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1 border-t border-[#1e1e4a]/40 pt-2">
+          {details.events.slice(0, 3).map((evt, i) => (
+            <span key={i} className="px-2 py-0.5 bg-cyan-900/20 border border-cyan-500/10 text-cyan-400 text-[9px] rounded">
+              📌 {evt}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -8,9 +8,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes import router
+from dotenv import load_dotenv
+
+# Load environment variables at server start
+load_dotenv()
 
 # ── Create the FastAPI Application ───────────────────────────────────────────
 app = FastAPI(
+
     title="QUANTUM AGENT API",
     description="Multi-Agent Financial Intelligence Platform — Technical, Fundamental & Sentiment Analysis",
     version="1.0.0",

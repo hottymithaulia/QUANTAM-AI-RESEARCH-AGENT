@@ -1,59 +1,70 @@
-# QUANTUM AGENT 🤖
-## Institutional Multi-Agent Financial Intelligence Platform
+# QUANTUM Financial Intelligence 🤖
+## Institutional-Grade Multi-Agent Financial Research Platform
 
-A beginner-friendly MVP that uses **4 AI agents** to analyze stocks and produce a **BUY / HOLD / SELL** recommendation.
+QUANTUM is an advanced, production-ready multi-agent investment research and decision-support system. It orchestrates parallel AI agent nodes to process real-time market data, financial statements, and news headlines, delivering a unified Market Bias synthesis report.
 
 ---
 
-## 📁 Folder Structure
+## 🚀 Architectural Capabilities
+
+* **Real-Time Market Feeds**: Integrates `yfinance` to parse active market statistics and OHLCV price histories.
+* **Exchange Suffix Auto-Resolution**: Detects common Indian stocks (e.g. `RELIANCE`, `TCS`, `INFY`) and auto-appends `.NS` for seamless Yahoo Finance querying, alongside standard US tickers (e.g., `AAPL`, `TSLA`).
+* **Multi-Timeframe Audits**: Aggregates and evaluates technical variables across `15m`, `1h`, `4h`, `1d`, and `1w` price streams (resampling 1h data into 4h intervals via Pandas).
+* **Dual-Mode Sentiment Agent**: Classifies media coverage via an offline keyword-matching lexicon with event triggers, or dynamically upgrades to a zero-shot LLM using **Google Gemini 1.5** when `GEMINI_API_KEY` is present.
+* **Explainable Consensus Decisioning**: The Master Agent synthesizes results using a **40-35-25 weighted matrix**, outputting a unified non-advice **Market Bias** (`Bullish`, `Bearish`, `Neutral`), risk categories, and specific watchlist triggers.
+* **Interactive Live Charts**: Embeds real-time **TradingView** candle widgets with interval selectors matching client preferences.
+* **Visual Pipeline Timeline**: Illustrates step-by-step pipeline execution (`Market Data Ingest` ➔ `Technical Audits` ➔ `Fundamental Evaluations` ➔ `Sentiment Mapping` ➔ `Master Synthesis`) to track agent coordination in real-time.
+
+---
+
+## 📁 Repository Map
 
 ```
-Stock research Agent/
+QUANTUM-AI-RESEARCH-AGENT/
 │
-├── backend/                        ← FastAPI Python backend
-│   ├── main.py                     ← App entry point
-│   ├── requirements.txt            ← Python dependencies
-│   ├── config/                     ← System configs and settings [.gitkeep]
-│   ├── tools/                      ← Auxiliary tools (scrapers, APIs) [.gitkeep]
-│   ├── memory/                     ← Short-term context memory [.gitkeep]
+├── backend/                    ← FastAPI Python Backend Gateway
+│   ├── main.py                 ← Server entry point (cors & config loader)
+│   ├── requirements.txt        ← Backend dependencies (yfinance, pandas, google-generativeai)
+│   ├── render.yaml             ← Render infrastructure-as-code configuration
 │   ├── agents/
-│   │   ├── base_agent.py           ← Base template class for agents
-│   │   ├── technical_agent.py      ← RSI, MACD, Moving Average analysis
-│   │   ├── fundamental_agent.py    ← PE ratio, Revenue, EPS analysis
-│   │   ├── sentiment_agent.py      ← News sentiment analysis
-│   │   ├── master_agent.py         ← Combines all agent signals
-│   │   ├── technical/              ← Feature folder for Technical Agents [.gitkeep]
-│   │   ├── fundamental/            ← Feature folder for Fundamental Agents [.gitkeep]
-│   │   ├── sentiment/              ← Feature folder for Sentiment Agents [.gitkeep]
-│   │   └── orchestrator/           ← Orchestration / Multi-Agent Coordinator [.gitkeep]
+│   │   ├── technical_agent.py  ← Volatility, support, resistance, and multi-timeframe checks
+│   │   ├── fundamental_agent.py← Health, valuation, and compound growth scorers
+│   │   ├── sentiment_agent.py  ← News lexicon scorer & zero-shot Gemini analyzer
+│   │   └── master_agent.py     ← Weighted consensus matrix & narrative synthesizer
 │   ├── services/
-│   │   ├── stock_service.py        ← Mock stock data provider
-│   │   ├── news_service.py         ← Mock news headlines provider
-│   │   └── cache_service.py        ← In-memory result caching
+│   │   ├── stock_service.py    ← Real-time Yahoo Finance OHLCV & resampler
+│   │   ├── news_service.py     ← Real-time news extractor and tagger
+│   │   └── cache_service.py    ← In-memory thread-safe 5-min TTL cache
 │   ├── models/
-│   │   └── schemas.py              ← Pydantic data models
+│   │   └── schemas.py          ← Pydantic v2 schemas and validation models
 │   └── api/
-│       └── routes.py               ← FastAPI endpoint definitions
+│       └── routes.py           ← API endpoints, dotenv loader, and error handlers
 │
-├── frontend/                       ← React + Vite + Tailwind frontend
-│   ├── src/
-│   │   ├── main.jsx                ← React entry point
-│   │   ├── App.jsx                 ← Main app component
-│   │   ├── api.js                  ← Axios API client
-│   │   ├── index.css               ← Global styles + animations
-│   │   └── components/
-│   │       ├── Header.jsx          ← Navigation header
-│   │       ├── SearchBar.jsx       ← Stock symbol search
-│   │       ├── KpiCards.jsx        ← Summary metric cards
-│   │       ├── AgentCard.jsx       ← Individual agent result card
-│   │       ├── RecommendationCard.jsx ← Final BUY/HOLD/SELL card
-│   │       ├── StockInfoCard.jsx   ← Stock price + chart
-│   │       ├── MiniChart.jsx       ← SVG line chart
-│   │       └── ArchitecturePage.jsx← System architecture diagram
-│   └── tailwind.config.js          ← Tailwind theme configuration
+├── frontend/                   ← React client application
+│   ├── vercel.json             ← SPA routing configuration for Vercel
+│   └── src/
+│       ├── main.jsx            ← React renderer
+│       ├── App.jsx             ← Dashboard state, timeline, and layout coordinator
+│       ├── api.js              ← Axios client pointing to port 8000
+│       ├── index.css           ← CSS theme tokens, glassmorphism, and animations
+│       └── components/
+│           ├── Header.jsx      ← Navbar switcher
+│           ├── SearchBar.jsx   ← Quick-ticker bar
+│           ├── KpiCards.jsx    ← Summarizes price, bias, confidence, and risk
+│           ├── AgentCard.jsx   ← Multi-layout card displaying sub-agent details
+│           ├── RecommendationCard.jsx ← Master Synthesis Report and agent weight charts
+│           ├── StockInfoCard.jsx   ← Detailed company metrics
+│           └── TradingViewChart.jsx ← Renders dynamic TradingView chart and selector
 │
-└── docs/                           ← Project Documentation
-    └── architecture/               ← Flowcharts and Architecture diagrams [.gitkeep]
+├── docs/                       ← Developer Architecture & Implementation Documentation
+│   ├── architecture.md         ← Server-client topology and caching overview
+│   ├── agent-flow.md           ← Sub-agent algorithms and weighting math
+│   ├── api-design.md           ← Schema endpoints contracts
+│   ├── security.md             ← Isolation controls, validation, and diagnostics
+│   └── deployment.md           ← Step-by-step Vercel and Render configurations
+│
+├── .env.example                ← Environment template
+└── README.md                   ← Master project guidebook
 ```
 
 ---
@@ -74,138 +85,44 @@ For detailed development guidelines, branching protocols, and merging instructio
 
 ---
 
----
+## ⚡ Quick Start (Local Setup)
 
-## ⚡ Quick Start
+### 1. Copy Environment File & Configure
+Copy `.env.example` to `.env` in the root workspace directory:
+```bash
+cp .env.example .env
+```
+*(Optional: Set your `GEMINI_API_KEY` to activate advanced generative news classification.)*
 
-### Step 1 — Install Backend Dependencies
-
+### 2. Boot Backend Server
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-### Step 2 — Start the FastAPI Backend
-
-```bash
-cd backend
 python main.py
 ```
+* Backend starts at `http://localhost:8000`. 
+* Interactive Swagger Docs are available at `http://localhost:8000/docs`.
 
-The backend will start at: **http://localhost:8000**  
-Visit **http://localhost:8000/docs** for interactive API documentation.
-
-### Step 3 — Install Frontend Dependencies
-
-Open a **new terminal** (keep backend running):
-
+### 3. Launch React Client
+In a new terminal:
 ```bash
 cd frontend
 npm install
-```
-
-### Step 4 — Start the React Frontend
-
-```bash
-cd frontend
 npm run dev
 ```
-
-The frontend will start at: **http://localhost:5173**
-
----
-
-## 🔌 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET`  | `/` | Welcome message |
-| `GET`  | `/api/health` | Health check |
-| `POST` | `/api/analyze` | Run full multi-agent analysis |
-| `GET`  | `/api/stock/{symbol}` | Get raw stock data + chart |
-
-### Example: Analyze AAPL
-
-```bash
-curl -X POST http://localhost:8000/api/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"symbol": "AAPL"}'
-```
+* Access the client dashboard at `http://localhost:5173`.
 
 ---
 
-## 🤖 How the Agents Work
+## 📂 System Documentation
 
-```
-User Input (e.g. "AAPL")
-       ↓
-Market Data Service (price, RSI, MACD, news)
-       ↓
-┌──────────────────┬──────────────────┬──────────────────┐
-│ Technical Agent  │Fundamental Agent │ Sentiment Agent  │
-│ RSI + MACD + MA  │ PE + Revenue+EPS │  News Headlines  │
-└──────────────────┴──────────────────┴──────────────────┘
-       ↓
-Master Agent (combines all signals)
-       ↓
-Final Decision: BUY / HOLD / SELL
-```
+For detailed analysis of design decisions, review the following guides:
+* [Architecture Design](file:///c:/Users/singh/QUANTAM-AI-RESEARCH-AGENT/docs/architecture.md)
+* [Multi-Agent Consensus Flow](file:///c:/Users/singh/QUANTAM-AI-RESEARCH-AGENT/docs/agent-flow.md)
+* [API Contract Design](file:///c:/Users/singh/QUANTAM-AI-RESEARCH-AGENT/docs/api-design.md)
+* [Security & Safety Safeguards](file:///c:/Users/singh/QUANTAM-AI-RESEARCH-AGENT/docs/security.md)
+* [Hosting & Deployment Guide](file:///c:/Users/singh/QUANTAM-AI-RESEARCH-AGENT/docs/deployment.md)
 
 ---
 
-## 🎨 UI Features
-
-- **Dark Theme** — Deep navy/purple background
-- **Purple + Cyan Accents** — Gradient text and borders
-- **Animated Cards** — Fade-in with stagger delays
-- **Confidence Bars** — Animated progress bars
-- **SVG Mini Chart** — Pure SVG, zero dependencies
-- **Architecture Page** — Interactive workflow diagram
-
----
-
-## 📦 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite |
-| Styling | Tailwind CSS v3 |
-| HTTP Client | Axios |
-| Backend | FastAPI (Python) |
-| Server | Uvicorn |
-| Validation | Pydantic v2 |
-
----
-
-## 🔑 Adding a Real AI (OpenRouter)
-
-To use a real AI model instead of mock data, add this to your `.env`:
-
-```env
-OPENROUTER_API_KEY=your-key-here
-```
-
-Then in any agent file, replace the scoring logic with an API call:
-
-```python
-import os, httpx
-
-async def call_ai(prompt: str) -> str:
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        return "Mock response — add OPENROUTER_API_KEY to enable AI"
-    
-    response = httpx.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}"},
-        json={
-            "model": "openai/gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": prompt}]
-        }
-    )
-    return response.json()["choices"][0]["message"]["content"]
-```
-
----
-
-> ⚠️ **Disclaimer**: For educational purposes only. Not financial advice.
+> ⚠️ **Disclaimer**: For educational purposes only. This platform represents quantitative analysis and does not provide financial or investment advice.
