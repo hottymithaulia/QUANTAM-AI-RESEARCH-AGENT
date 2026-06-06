@@ -10,40 +10,69 @@ A beginner-friendly MVP that uses **4 AI agents** to analyze stocks and produce 
 ```
 Stock research Agent/
 │
-├── backend/                    ← FastAPI Python backend
-│   ├── main.py                 ← App entry point
-│   ├── requirements.txt        ← Python dependencies
+├── backend/                        ← FastAPI Python backend
+│   ├── main.py                     ← App entry point
+│   ├── requirements.txt            ← Python dependencies
+│   ├── config/                     ← System configs and settings [.gitkeep]
+│   ├── tools/                      ← Auxiliary tools (scrapers, APIs) [.gitkeep]
+│   ├── memory/                     ← Short-term context memory [.gitkeep]
 │   ├── agents/
-│   │   ├── technical_agent.py  ← RSI, MACD, Moving Average analysis
-│   │   ├── fundamental_agent.py← PE ratio, Revenue, EPS analysis
-│   │   ├── sentiment_agent.py  ← News sentiment analysis
-│   │   └── master_agent.py     ← Combines all agent signals
+│   │   ├── base_agent.py           ← Base template class for agents
+│   │   ├── technical_agent.py      ← RSI, MACD, Moving Average analysis
+│   │   ├── fundamental_agent.py    ← PE ratio, Revenue, EPS analysis
+│   │   ├── sentiment_agent.py      ← News sentiment analysis
+│   │   ├── master_agent.py         ← Combines all agent signals
+│   │   ├── technical/              ← Feature folder for Technical Agents [.gitkeep]
+│   │   ├── fundamental/            ← Feature folder for Fundamental Agents [.gitkeep]
+│   │   ├── sentiment/              ← Feature folder for Sentiment Agents [.gitkeep]
+│   │   └── orchestrator/           ← Orchestration / Multi-Agent Coordinator [.gitkeep]
 │   ├── services/
-│   │   ├── stock_service.py    ← Mock stock data provider
-│   │   ├── news_service.py     ← Mock news headlines provider
-│   │   └── cache_service.py    ← In-memory result caching
+│   │   ├── stock_service.py        ← Mock stock data provider
+│   │   ├── news_service.py         ← Mock news headlines provider
+│   │   └── cache_service.py        ← In-memory result caching
 │   ├── models/
-│   │   └── schemas.py          ← Pydantic data models
+│   │   └── schemas.py              ← Pydantic data models
 │   └── api/
-│       └── routes.py           ← FastAPI endpoint definitions
+│       └── routes.py               ← FastAPI endpoint definitions
 │
-└── frontend/                   ← React + Vite + Tailwind frontend
-    ├── src/
-    │   ├── main.jsx            ← React entry point
-    │   ├── App.jsx             ← Main app component
-    │   ├── api.js              ← Axios API client
-    │   ├── index.css           ← Global styles + animations
-    │   └── components/
-    │       ├── Header.jsx          ← Navigation header
-    │       ├── SearchBar.jsx       ← Stock symbol search
-    │       ├── KpiCards.jsx        ← Summary metric cards
-    │       ├── AgentCard.jsx       ← Individual agent result card
-    │       ├── RecommendationCard.jsx ← Final BUY/HOLD/SELL card
-    │       ├── StockInfoCard.jsx   ← Stock price + chart
-    │       ├── MiniChart.jsx       ← SVG line chart
-    │       └── ArchitecturePage.jsx← System architecture diagram
-    └── tailwind.config.js      ← Tailwind theme configuration
+├── frontend/                       ← React + Vite + Tailwind frontend
+│   ├── src/
+│   │   ├── main.jsx                ← React entry point
+│   │   ├── App.jsx                 ← Main app component
+│   │   ├── api.js                  ← Axios API client
+│   │   ├── index.css               ← Global styles + animations
+│   │   └── components/
+│   │       ├── Header.jsx          ← Navigation header
+│   │       ├── SearchBar.jsx       ← Stock symbol search
+│   │       ├── KpiCards.jsx        ← Summary metric cards
+│   │       ├── AgentCard.jsx       ← Individual agent result card
+│   │       ├── RecommendationCard.jsx ← Final BUY/HOLD/SELL card
+│   │       ├── StockInfoCard.jsx   ← Stock price + chart
+│   │       ├── MiniChart.jsx       ← SVG line chart
+│   │       └── ArchitecturePage.jsx← System architecture diagram
+│   └── tailwind.config.js          ← Tailwind theme configuration
+│
+└── docs/                           ← Project Documentation
+    └── architecture/               ← Flowcharts and Architecture diagrams [.gitkeep]
 ```
+
+---
+
+## 👥 Team Collaboration & Branch Ownership
+
+To support parallel development during the Capgemini Buildathon, the repository uses a feature-branch model. The project is split into key areas with dedicated branch owners:
+
+| Branch Name | Primary Owner | Module/Scope |
+|:---|:---|:---|
+| `frontend-ui` | **Abhinav** | React application, UI widgets, dashboards, visualizations |
+| `backend-data` | **Priyansh** | FastAPI endpoints, stock services, database logic |
+| `technical-agent` | **Ummehani** | Technical analysis agent modules, custom indicators |
+| `fundamental-sentiment` | **Suhani** | Fundamental metrics and sentiment analysis agents |
+| `architecture-docs` | **Vedant** | System diagrams, API specifications, markdown docs |
+
+For detailed development guidelines, branching protocols, and merging instructions, see [CONTRIBUTING.md](file:///c:/Users/DELL/OneDrive/Desktop/Stock%20research%20Agent/CONTRIBUTING.md) and [TEAM_WORKFLOW.md](file:///c:/Users/DELL/OneDrive/Desktop/Stock%20research%20Agent/TEAM_WORKFLOW.md).
+
+---
 
 ---
 
