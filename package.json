@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm --prefix frontend run dev",
+    "dev": "node start-dev.js",
     "build": "npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
     "preview": "npm --prefix frontend run preview",
     "frontend-install": "npm --prefix frontend install",
-    "install-all": "npm --prefix frontend install && cd backend && pip install -r requirements.txt",
-    "backend-start": "cd backend && python main.py"
+    "install-all": "node start-dev.js --install-only",
+    "backend-start": "node start-dev.js --backend-only"
   }
 }
