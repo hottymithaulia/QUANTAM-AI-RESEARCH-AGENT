@@ -18,11 +18,15 @@ if %errorlevel% equ 0 (
 ) else (
     echo [WARNING] Default system Python (3.14) is broken (missing 'encodings' module).
     echo Falling back to Python 3.12...
-    if exist "C:\Users\DELL\AppData\Local\Programs\Python\Python312\python.exe" (
-        set PY_CMD="C:\Users\DELL\AppData\Local\Programs\Python\Python312\python.exe"
+    if exist "%USERPROFILE%\AppData\Local\Programs\Python\Python313\python.exe" (
+        set PY_CMD="%USERPROFILE%\AppData\Local\Programs\Python\Python313\python.exe"
+    ) else if exist "%USERPROFILE%\AppData\Local\Programs\Python\Python312\python.exe" (
+        set PY_CMD="%USERPROFILE%\AppData\Local\Programs\Python\Python312\python.exe"
+    ) else if exist "%USERPROFILE%\AppData\Local\Programs\Python\Python311\python.exe" (
+        set PY_CMD="%USERPROFILE%\AppData\Local\Programs\Python\Python311\python.exe"
     ) else (
-        echo [ERROR] Working Python 3.12 installation not found at C:\Users\DELL\AppData\Local\Programs\Python\Python312\python.exe.
-        echo Please repair your Python installation or install Python 3.12.
+        echo [ERROR] Working Python installation not found in User AppData.
+        echo Please repair your Python installation or install Python 3.12/3.13.
         pause
         exit /b 1
     )

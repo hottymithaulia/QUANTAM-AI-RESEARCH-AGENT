@@ -9,11 +9,20 @@ function getPythonCommand() {
     execSync('python -c "import encodings"', { stdio: 'ignore' });
     return 'python';
   } catch (e) {
-    // If default python fails, try the Python 3.12 path
-    const fallbackPath = 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python312\\python.exe';
-    if (fs.existsSync(fallbackPath)) {
-      console.log(`[Launcher] Default python is broken. Falling back to Python 3.12: ${fallbackPath}`);
-      return fallbackPath;
+    // If default python fails, try the Python paths in USERPROFILE
+    const userProfile = process.env.USERPROFILE || process.env.HOME || '';
+    if (userProfile) {
+      const fallbacks = [
+        path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', 'Python313', 'python.exe'),
+        path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', 'Python312', 'python.exe'),
+        path.join(userProfile, 'AppData', 'Local', 'Programs', 'Python', 'Python311', 'python.exe')
+      ];
+      for (const fallbackPath of fallbacks) {
+        if (fs.existsSync(fallbackPath)) {
+          console.log(`[Launcher] Default python is broken. Falling back to Python: ${fallbackPath}`);
+          return fallbackPath;
+        }
+      }
     }
     
     // Check if python3 works

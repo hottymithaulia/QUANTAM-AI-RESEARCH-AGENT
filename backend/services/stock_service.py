@@ -75,6 +75,11 @@ def get_stock_data(symbol: str) -> dict:
         if hist.empty:
             raise ValueError(f"No historical data returned for {resolved_symbol}")
             
+        # Clean any NaN values (e.g. yfinance may return NaN for the most recent day)
+        hist = hist.dropna(subset=['Close'])
+        if hist.empty:
+            raise ValueError(f"No valid historical close prices returned for {resolved_symbol}")
+            
         close_prices = hist['Close']
         last_price = float(close_prices.iloc[-1])
         prev_close = float(close_prices.iloc[-2]) if len(close_prices) > 1 else last_price
@@ -214,11 +219,13 @@ def get_multiple_timeframes(symbol: str) -> dict:
         # 15m (5 days)
         hist_15m = ticker.history(period="5d", interval="15m")
         if not hist_15m.empty:
+            hist_15m = hist_15m.dropna(subset=['Close'])
             timeframes["15m"] = hist_15m['Close'].round(2).tolist()
             
         # 1h (1 month)
         hist_1h = ticker.history(period="1mo", interval="1h")
         if not hist_1h.empty:
+            hist_1h = hist_1h.dropna(subset=['Close'])
             timeframes["1h"] = hist_1h['Close'].round(2).tolist()
             
             # Resample 1h to 4h (generate Open, High, Low, Close, Volume)
@@ -243,11 +250,13 @@ def get_multiple_timeframes(symbol: str) -> dict:
         # 1d (6 months)
         hist_1d = ticker.history(period="6mo", interval="1d")
         if not hist_1d.empty:
+            hist_1d = hist_1d.dropna(subset=['Close'])
             timeframes["1d"] = hist_1d['Close'].round(2).tolist()
             
         # 1w (1 year)
         hist_1w = ticker.history(period="1y", interval="1wk")
         if not hist_1w.empty:
+            hist_1w = hist_1w.dropna(subset=['Close'])
             timeframes["1w"] = hist_1w['Close'].round(2).tolist()
             
         # Standardize fallback keys if any timeframe is missing
